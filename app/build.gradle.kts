@@ -23,12 +23,14 @@ dependencies {
 
     // This dependency is used by the application.
     implementation(libs.guava)
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
