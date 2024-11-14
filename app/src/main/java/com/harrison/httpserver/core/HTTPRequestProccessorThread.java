@@ -20,10 +20,11 @@ public class HTTPRequestProccessorThread extends Thread {
 
   @Override
   public void run() {
+    InputStream inputStream = null;
+    OutputStream outputStream = null;
     try {
-
-      InputStream inputStream = socket.getInputStream();
-      OutputStream outputStream = socket.getOutputStream();
+      inputStream = socket.getInputStream();
+      outputStream = socket.getOutputStream();
 
       String html = "<html><head><title>Test website</title></head><body><h1>Welcome to the simple java server</h1></body></html>";
       final String CRLF = "\n\r";
@@ -35,14 +36,29 @@ public class HTTPRequestProccessorThread extends Thread {
 
       outputStream.write(response.getBytes());
 
-      inputStream.close();
-      outputStream.close();
-      socket.close();
-
       LOGGER.info(" * Finished serving page to: " + socket.getInetAddress());
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOGGER.error("Failed to serve page.", e);
+    } finally {
+      if (inputStream != null) {
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+        }
+      }
+      if (outputStream != null) {
+        try {
+          outputStream.close();
+        } catch (IOException e) {
+        }
+      }
+      if (socket != null) {
+        try {
+          socket.close();
+        } catch (IOException e) {
+        }
+      }
+
     }
   }
 

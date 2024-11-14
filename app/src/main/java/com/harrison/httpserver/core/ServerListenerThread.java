@@ -24,24 +24,24 @@ public class ServerListenerThread extends Thread {
   @Override
   public void run() {
     // TODO use thread-pool instead of infinitely generating threads
-    while (serverSocket.isBound() && !serverSocket.isClosed()) {
-      try {
-        Socket socket = serverSocket.accept();
-        LOGGER.info(" * Connection on port: " + port
-            + ", serving: " + webroot
-            + " is accepted from: " + socket.getInetAddress());
-        Thread pageServer = new HTTPRequestProccessorThread(socket);
-        pageServer.start();
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
     try {
-      serverSocket.close();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      while (serverSocket.isBound() && !serverSocket.isClosed()) {
+        try {
+          Socket socket = serverSocket.accept();
+          LOGGER.info(" * Connection on port: " + port
+              + ", serving: " + webroot
+              + " is accepted from: " + socket.getInetAddress());
+          Thread pageServer = new HTTPRequestProccessorThread(socket);
+          pageServer.start();
+        } catch (IOException e) {
+          LOGGER.error("Failed to bind socket and generate processing thread.", e);
+        }
+      }
+    } finally {
+      try {
+        serverSocket.close();
+      } catch (IOException e) {
+      }
     }
   }
 
