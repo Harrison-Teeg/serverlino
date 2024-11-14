@@ -8,13 +8,13 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HTTPRequestProccessorThread extends Thread {
+public class HttpRequestProccessorThread extends Thread {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(HTTPRequestProccessorThread.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(HttpRequestProccessorThread.class);
 
   private Socket socket;
 
-  public HTTPRequestProccessorThread(Socket socket) {
+  public HttpRequestProccessorThread(Socket socket) {
     this.socket = socket;
   }
 
