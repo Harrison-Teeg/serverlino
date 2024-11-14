@@ -3,20 +3,20 @@
  */
 package com.harrison.httpserver;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import com.harrison.httpserver.config.Configuration;
-import com.harrison.httpserver.config.ConfigurationManager;
-import com.harrison.httpserver.core.ServerListenerThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.harrison.http.HttpParser;
+import com.harrison.httpserver.config.Configuration;
+import com.harrison.httpserver.config.ConfigurationManager;
+import com.harrison.httpserver.core.ServerListenerThread;
+
 public class App {
   private final static Logger LOGGER = LoggerFactory.getLogger(App.class);
-
-  public String getGreeting() {
-    return "Hello!";
-  }
 
   public static void main(String[] args) {
     LOGGER.info("Server starting...");
