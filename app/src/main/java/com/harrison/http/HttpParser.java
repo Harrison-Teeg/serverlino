@@ -16,17 +16,12 @@ public class HttpParser {
   private static final int CR = 0x0D;
   private static final int LF = 0x0A;
 
-  public HttpRequest parseHttpRequest(InputStream inputStream) {
+  public HttpRequest parseHttpRequest(InputStream inputStream) throws HttpParsingException {
     InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.US_ASCII);
 
     HttpRequest httpRequest = new HttpRequest();
 
-    try {
-      parseRequestLine(reader, httpRequest);
-    } catch (HttpParsingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    parseRequestLine(reader, httpRequest);
     parseHeaders(reader, httpRequest);
     parseBody(reader, httpRequest);
 
@@ -43,18 +38,16 @@ public class HttpParser {
       while ((_byte = reader.read()) >= 0) {
         if (_byte == CR) {
           _byte = reader.read();
-          if (_byte == LF) {
-            // finished with request line
-            if (parsedMethod && parsedTarget) {
-              LOGGER.info("HttpVersion received as: " + sb.toString());
-              sb.delete(0, sb.length());
-            } else {
-              throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
-            }
+          if (_byte == LF && parsedMethod && parsedTarget) { // Finished request line and filled all values
+            LOGGER.info("HttpVersion received as: " + sb.toString());
+            sb.delete(0, sb.length());
+            return;
+          } else {
+            throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST); // too few fields in request ||
+                                                                                         // CR without LF
           }
         } else if (_byte == SP) {
           if (!parsedMethod) {
-            LOGGER.info("Method received as: " + sb.toString());
             httpRequest.setMethod(sb.toString());
             sb.delete(0, sb.length());
             parsedMethod = true;
@@ -62,9 +55,17 @@ public class HttpParser {
             LOGGER.info("Target received as: " + sb.toString());
             sb.delete(0, sb.length());
             parsedTarget = true;
+          } else {
+            throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST); // too few fields in request
           }
         } else {
           sb.append((char) _byte);
+
+          if (!parsedMethod) {
+            if (sb.length() > HttpMethod.MAX_LENGTH) {
+              throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
+            }
+          }
         }
       }
     } catch (IOException e) {
