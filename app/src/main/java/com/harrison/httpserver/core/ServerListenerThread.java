@@ -1,12 +1,15 @@
 package com.harrison.httpserver.core;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ServerListenerThread extends Thread {
+
+  private final static Logger LOGGER = LoggerFactory.getLogger(ServerListenerThread.class);
 
   private int port;
   private String webroot;
@@ -20,24 +23,21 @@ public class ServerListenerThread extends Thread {
 
   @Override
   public void run() {
+    // TODO use thread-pool instead of infinitely generating threads
+    while (serverSocket.isBound() && !serverSocket.isClosed()) {
+      try {
+        Socket socket = serverSocket.accept();
+        LOGGER.info(" * Connection on port: " + port
+            + ", serving: " + webroot
+            + " is accepted from: " + socket.getInetAddress());
+        Thread pageServer = new HTTPRequestProccessorThread(socket);
+        pageServer.start();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
     try {
-      Socket socket = serverSocket.accept();
-      InputStream inputStream = socket.getInputStream();
-      OutputStream outputStream = socket.getOutputStream();
-
-      String html = "<html><head><title>Test website</title></head><body><h1>Welcome to the simple java server</h1></body></html>";
-      final String CRLF = "\n\r";
-      String response = "HTTP/1.1 200 OK" + CRLF + // HTTP_Version Response_Code Response_Message
-          "Content-Length: " + html.getBytes().length + CRLF + // Header
-          CRLF +
-          html +
-          CRLF + CRLF;
-
-      outputStream.write(response.getBytes());
-
-      inputStream.close();
-      outputStream.close();
-      socket.close();
       serverSocket.close();
     } catch (IOException e) {
       // TODO Auto-generated catch block

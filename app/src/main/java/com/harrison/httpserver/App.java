@@ -8,20 +8,24 @@ import java.io.IOException;
 import com.harrison.httpserver.config.Configuration;
 import com.harrison.httpserver.config.ConfigurationManager;
 import com.harrison.httpserver.core.ServerListenerThread;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class App {
+  private final static Logger LOGGER = LoggerFactory.getLogger(App.class);
+
   public String getGreeting() {
     return "Hello!";
   }
 
   public static void main(String[] args) {
-    System.out.println("Server starting...");
+    LOGGER.info("Server starting...");
 
     ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/server_config.json");
     Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
 
-    System.out.println("Port: " + conf.getPort());
-    System.out.println("Webroot: " + conf.getWebroot());
+    LOGGER.info("Port: " + conf.getPort());
+    LOGGER.info("Webroot: " + conf.getWebroot());
 
     try {
       ServerListenerThread listener = new ServerListenerThread(conf.getPort(), conf.getWebroot());

@@ -25,6 +25,11 @@ dependencies {
     implementation(libs.guava)
     implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
+    // Logger
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation("org.slf4j:slf4j-api:2.0.16")
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    implementation("ch.qos.logback:logback-classic:1.5.12")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
