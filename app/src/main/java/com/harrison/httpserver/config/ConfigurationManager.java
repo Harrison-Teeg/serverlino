@@ -26,12 +26,12 @@ public class ConfigurationManager {
   /**
    * Load the server configuration .json file located at filePath
    */
-  public void loadConfigurationFile(String filePath) throws HTTPConfigurationException {
+  public void loadConfigurationFile(String filePath) throws HttpConfigurationException {
     FileReader fileReader = null;
     try {
       fileReader = new FileReader(filePath);
     } catch (FileNotFoundException e) {
-      throw new HTTPConfigurationException(e);
+      throw new HttpConfigurationException(e);
     }
     StringBuffer sb = new StringBuffer();
     int i;
@@ -40,7 +40,7 @@ public class ConfigurationManager {
         sb.append((char) i);
       }
     } catch (IOException e) {
-      throw new HTTPConfigurationException(e);
+      throw new HttpConfigurationException(e);
     }
     try {
       fileReader.close();
@@ -51,12 +51,12 @@ public class ConfigurationManager {
     try {
       conf = Json.parse(sb.toString());
     } catch (IOException e) {
-      throw new HTTPConfigurationException("Error parsing the configuration file.", e);
+      throw new HttpConfigurationException("Error parsing the configuration file.", e);
     }
     try {
       myCurrentConfiguration = Json.fromJson(conf, Configuration.class);
     } catch (JsonProcessingException e) {
-      throw new HTTPConfigurationException("Error internally processing the configuration.", e);
+      throw new HttpConfigurationException("Error internally processing the configuration.", e);
     } catch (IllegalArgumentException e) {
       e.printStackTrace();
     }
@@ -67,7 +67,7 @@ public class ConfigurationManager {
    */
   public Configuration getCurrentConfiguration() {
     if (myCurrentConfiguration == null) {
-      throw new HTTPConfigurationException("No current configuration set.");
+      throw new HttpConfigurationException("No current configuration set.");
     }
     return myCurrentConfiguration;
   }

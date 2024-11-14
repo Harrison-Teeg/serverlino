@@ -31,7 +31,7 @@ public class ServerListenerThread extends Thread {
           LOGGER.info(" * Connection on port: " + port
               + ", serving: " + webroot
               + " is accepted from: " + socket.getInetAddress());
-          Thread pageServer = new HTTPRequestProccessorThread(socket);
+          Thread pageServer = new HttpRequestProccessorThread(socket);
           pageServer.start();
         } catch (IOException e) {
           LOGGER.error("Failed to bind socket and generate processing thread.", e);
