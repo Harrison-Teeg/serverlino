@@ -4,13 +4,10 @@
 package com.harrison.httpserver;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import com.harrison.httpserver.config.Configuration;
 import com.harrison.httpserver.config.ConfigurationManager;
+import com.harrison.httpserver.core.ServerListenerThread;
 
 public class App {
   public String getGreeting() {
@@ -27,25 +24,8 @@ public class App {
     System.out.println("Webroot: " + conf.getWebroot());
 
     try {
-      ServerSocket serverSocket = new ServerSocket(conf.getPort());
-      Socket socket = serverSocket.accept();
-      InputStream inputStream = socket.getInputStream();
-      OutputStream outputStream = socket.getOutputStream();
-
-      String html = "<html><head><title>Test website</title></head><body><h1>Welcome to the simple java server</h1></body></html>";
-      final String CRLF = "\n\r";
-      String response = "HTTP/1.1 200 OK" + CRLF + // HTTP_Version Response_Code Response_Message
-          "Content-Length: " + html.getBytes().length + CRLF + // Header
-          CRLF +
-          html +
-          CRLF + CRLF;
-
-      outputStream.write(response.getBytes());
-
-      inputStream.close();
-      outputStream.close();
-      socket.close();
-      serverSocket.close();
+      ServerListenerThread listener = new ServerListenerThread(conf.getPort(), conf.getWebroot());
+      listener.start();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
