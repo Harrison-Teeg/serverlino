@@ -10,6 +10,19 @@ public enum HttpVersion {
   public final String LITERAL;
   public final int MAJOR;
   public final int MINOR;
+  public static final int LITERAL_MAX_LENGTH; // this should be fine since by convention for HTTP/x.x: each x should be
+                                              // one digit
+
+  static {
+    int len = -1;
+    for (HttpVersion ver : HttpVersion.values()) {
+      int literalLen = ver.name().length();
+      if (literalLen > len) {
+        len = literalLen;
+      }
+    }
+    LITERAL_MAX_LENGTH = len;
+  }
 
   HttpVersion(String literal, int major, int minor) {
     this.LITERAL = literal;

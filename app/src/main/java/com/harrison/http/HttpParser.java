@@ -65,7 +65,16 @@ public class HttpParser {
             if (sb.length() > HttpMethod.MAX_LENGTH) {
               throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
             }
+          } else if (!parsedTarget) {
+            if (sb.length() > 100) { // TODO update this with target max length
+              throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_414_BAD_REQUEST);
+            }
+          } else {
+            if (sb.length() > HttpVersion.LITERAL_MAX_LENGTH) {
+              throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+            }
           }
+
         }
       }
     } catch (IOException e) {
