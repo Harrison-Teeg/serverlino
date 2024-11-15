@@ -23,4 +23,12 @@ public class HttpRequest extends HttpMessage {
     throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
   }
 
+  void setRequestTarget(String target) throws HttpParsingException {
+    if (target != null && target.length() > 0) {
+      this.requestTarget = target;
+    } else {
+      throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+    }
+  }
+
 }
