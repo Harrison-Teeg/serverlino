@@ -32,17 +32,17 @@ class HttpVersionTest {
   }
 
   @Test
-  void parseValidHttpVersion() {
+  void parseValidHttpVersion1_1() {
     try {
       HttpRequest request = httpParser.parseHttpRequest(
-          generateValidHttpVersion());
-      assertEquals(HttpMethod.GET, request.getMethod());
+          generateValidHttpVersion1_1());
+      assertEquals(HttpVersion.HTTP_1_1, request.getHttpVersion());
     } catch (HttpParsingException e) {
       fail(e);
     }
   }
 
-  private InputStream generateValidHttpVersion() {
+  private InputStream generateValidHttpVersion1_1() {
     String rawData = "GET / HTTP/1.1\r\n" +
         "Host: localhost:8080\r\n" +
         "Connection: keep-alive\r\n" +

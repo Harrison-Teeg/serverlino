@@ -6,7 +6,12 @@ public class HttpRequest extends HttpMessage {
   private String requestTarget;
   private HttpVersion httpVersion;
 
-  HttpRequest() {
+  public String getRequestTarget() {
+    return requestTarget;
+  }
+
+  public HttpVersion getHttpVersion() {
+    return httpVersion;
   }
 
   public HttpMethod getMethod() {
