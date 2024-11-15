@@ -4,7 +4,7 @@ public class HttpRequest extends HttpMessage {
 
   private HttpMethod method;
   private String requestTarget;
-  private String httpVersion;
+  private HttpVersion httpVersion;
 
   HttpRequest() {
   }
@@ -31,4 +31,11 @@ public class HttpRequest extends HttpMessage {
     }
   }
 
+  void setHttpVersion(String literal) throws HttpParsingException {
+    if (literal != null && literal.length() > 0) {
+      this.httpVersion = HttpVersion.getCompatibleHttpVersion(literal);
+    } else {
+      throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
+    }
+  }
 }

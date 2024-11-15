@@ -39,7 +39,7 @@ public class HttpParser {
         if (_byte == CR) {
           _byte = reader.read();
           if (_byte == LF && parsedMethod && parsedTarget) { // Finished request line and filled all values
-            LOGGER.info("HttpVersion received as: " + sb.toString());
+            httpRequest.setHttpVersion(sb.toString());
             sb.delete(0, sb.length());
             return;
           } else {
