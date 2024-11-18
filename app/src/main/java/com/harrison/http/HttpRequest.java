@@ -4,14 +4,15 @@ public class HttpRequest extends HttpMessage {
 
   private HttpMethod method;
   private String requestTarget;
-  private HttpVersion httpVersion;
+  private String originalHttpVersion; // original request literal
+  private HttpVersion bestSupportedHttpVersion;
 
   public String getRequestTarget() {
     return requestTarget;
   }
 
   public HttpVersion getHttpVersion() {
-    return httpVersion;
+    return bestSupportedHttpVersion;
   }
 
   public HttpMethod getMethod() {
@@ -38,7 +39,7 @@ public class HttpRequest extends HttpMessage {
 
   void setHttpVersion(String literal) throws HttpParsingException {
     if (literal != null && literal.length() > 0) {
-      this.httpVersion = HttpVersion.getCompatibleHttpVersion(literal);
+      this.bestSupportedHttpVersion = HttpVersion.getCompatibleHttpVersion(literal);
     } else {
       throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
     }

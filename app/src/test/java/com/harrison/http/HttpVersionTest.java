@@ -1,6 +1,7 @@
 package com.harrison.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -18,6 +19,28 @@ class HttpVersionTest {
   @BeforeAll
   private void beforeClass() {
     httpParser = new HttpParser();
+  }
+
+  @Test
+  void getBestCompatibleHttpVersionTwo() {
+    try {
+      HttpVersion ver = HttpVersion.getCompatibleHttpVersion("HTTP/1.5");
+      assertNotNull(ver);
+      assertEquals(HttpVersion.HTTP_1_1, ver);
+    } catch (HttpParsingException e) {
+      fail();
+    }
+  }
+
+  @Test
+  void getBestCompatibleHttpVersion() {
+    try {
+      HttpVersion ver = HttpVersion.getCompatibleHttpVersion("HTTP/1.1");
+      assertNotNull(ver);
+      assertEquals(HttpVersion.HTTP_1_1, ver);
+    } catch (HttpParsingException e) {
+      fail();
+    }
   }
 
   @Test
