@@ -81,6 +81,9 @@ class HttpParserTest {
       HttpRequest request = httpParser.parseHttpRequest(
           generateValidGETRequest());
       assertEquals(HttpMethod.GET, request.getMethod());
+      assertEquals("/", request.getRequestTarget());
+      assertEquals(HttpVersion.HTTP_1_1, request.getHttpVersion());
+      assertEquals("HTTP/1.1", request.getHttpVersionLiteral());
     } catch (HttpParsingException e) {
       fail(e);
     }

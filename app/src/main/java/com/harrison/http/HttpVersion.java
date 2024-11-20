@@ -35,7 +35,7 @@ public enum HttpVersion {
   public static HttpVersion getCompatibleHttpVersion(String literal) throws HttpParsingException {
     Matcher regexMatcher = httpVersionRegexPattern.matcher(literal);
     if (!regexMatcher.find() || regexMatcher.groupCount() != 2) {
-      throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
+      throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
     }
 
     int major = Integer.parseInt(regexMatcher.group("major"));
@@ -52,9 +52,6 @@ public enum HttpVersion {
           }
         }
       }
-    }
-    if (bestCompatible == null) {
-      throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
     }
     return bestCompatible;
   }
