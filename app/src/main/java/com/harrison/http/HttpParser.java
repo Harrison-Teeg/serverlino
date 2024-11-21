@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,8 +84,49 @@ public class HttpParser {
     }
   }
 
-  private void parseHeaders(InputStreamReader reader, HttpRequest httpRequest) {
-    // TODO Auto-generated method stub
+  private void parseHeaders(InputStreamReader reader, HttpRequest httpRequest) throws HttpParsingException {
+    int _byte;
+    StringBuffer sb = new StringBuffer();
+    boolean lastWasCRLF = false;
+
+    try {
+      while ((_byte = reader.read()) >= 0) {
+        if (_byte == CR) {
+          _byte = reader.read();
+          if (_byte == LF) {
+            if (lastWasCRLF) { // finished processing header block (CRLF + CRLF)
+              return;
+            } else { // finished processing a single header
+              lastWasCRLF = true;
+              parseSingleHeader(sb.toString(), httpRequest);
+              sb.delete(0, sb.length());
+            }
+          } else {
+            throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST); // CR without LF
+          }
+        } else {
+          lastWasCRLF = false;
+          sb.append((char) _byte);
+          // TODO set a maximum header length
+        }
+      }
+    } catch (IOException e) {
+      throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+    }
+  }
+
+  private void parseSingleHeader(String rawHeaderText, HttpRequest httpRequest) throws HttpParsingException {
+    Pattern headerRegex = Pattern.compile(
+        "^(?<headerName>[!#$%&’*+\\-./^_‘|˜\\dA-Za-z]+):\\s?(?<headerValue>[!#$%&’*+\\-./^_‘|˜(),:;<=>?@[\\\\]{}\" \\dA-Za-z]+)\\s?$");
+
+    Matcher regexMatcher = headerRegex.matcher(rawHeaderText);
+    if (!regexMatcher.matches()) {
+      throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+    }
+
+    String headerName = regexMatcher.group("headerName");
+    String headerValue = regexMatcher.group("headerValue");
+    httpRequest.addHeader(headerName, headerValue);
   }
 
   private void parseBody(InputStreamReader reader, HttpRequest httpRequest) {
