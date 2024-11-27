@@ -7,17 +7,20 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.harrison.httpserver.core.io.WebRootHandler;
+import com.harrison.httpserver.core.io.WebRootNotFoundException;
+
 public class ServerListenerThread extends Thread {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(ServerListenerThread.class);
 
   private int port;
-  private String webroot;
+  private WebRootHandler webRootHandler;
   private ServerSocket serverSocket;
 
-  public ServerListenerThread(int port, String webroot) throws IOException {
+  public ServerListenerThread(int port, String webroot) throws IOException, WebRootNotFoundException {
     this.port = port;
-    this.webroot = webroot;
+    this.webRootHandler = new WebRootHandler(webroot);
     this.serverSocket = new ServerSocket(port);
   }
 
@@ -29,9 +32,9 @@ public class ServerListenerThread extends Thread {
         try {
           Socket socket = serverSocket.accept();
           LOGGER.info(" * Connection on port: " + port
-              + ", serving: " + webroot
+              + ", serving: " + webRootHandler.getWebrootName()
               + " is accepted from: " + socket.getInetAddress());
-          Thread pageServer = new HttpRequestProccessorThread(socket);
+          Thread pageServer = new HttpRequestProccessorThread(socket, webRootHandler);
           pageServer.start();
         } catch (IOException e) {
           LOGGER.error("Failed to bind socket and generate processing thread.", e);

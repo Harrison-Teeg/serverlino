@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.harrison.httpserver.config.Configuration;
 import com.harrison.httpserver.config.ConfigurationManager;
 import com.harrison.httpserver.core.ServerListenerThread;
+import com.harrison.httpserver.core.io.WebRootNotFoundException;
 
 public class App {
   private final static Logger LOGGER = LoggerFactory.getLogger(App.class);
@@ -28,6 +29,9 @@ public class App {
       ServerListenerThread listener = new ServerListenerThread(conf.getPort(), conf.getWebroot());
       listener.start();
     } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (WebRootNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }

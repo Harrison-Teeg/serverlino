@@ -54,6 +54,7 @@ public class HttpParser {
             sb.delete(0, sb.length());
             parsedMethod = true;
           } else if (!parsedTarget) {
+            LOGGER.info("Requested URI: " + sb.toString());
             httpRequest.setRequestTarget(sb.toString());
             sb.delete(0, sb.length());
             parsedTarget = true;

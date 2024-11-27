@@ -1,5 +1,6 @@
 package com.harrison.httpserver.core;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,14 +9,28 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.harrison.http.HttpHeaderName;
+import com.harrison.http.HttpParser;
+import com.harrison.http.HttpParsingException;
+import com.harrison.http.HttpRequest;
+import com.harrison.http.HttpResponse;
+import com.harrison.http.HttpStatusCode;
+import com.harrison.http.HttpVersion;
+import com.harrison.httpserver.core.io.ReadFileException;
+import com.harrison.httpserver.core.io.WebRootHandler;
+
 public class HttpRequestProccessorThread extends Thread {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(HttpRequestProccessorThread.class);
 
   private Socket socket;
+  private WebRootHandler webRootHandler;
+  private HttpParser httpParser = new HttpParser();
 
-  public HttpRequestProccessorThread(Socket socket) {
+  public HttpRequestProccessorThread(Socket socket, WebRootHandler webroot) {
     this.socket = socket;
+    this.webRootHandler = webroot;
+
   }
 
   @Override
@@ -23,18 +38,24 @@ public class HttpRequestProccessorThread extends Thread {
     InputStream inputStream = null;
     OutputStream outputStream = null;
     try {
+      final String CRLF = "\n\r";
       inputStream = socket.getInputStream();
       outputStream = socket.getOutputStream();
 
-      String html = "<html><head><title>Test website</title></head><body><h1>Welcome to the simple java server</h1></body></html>";
-      final String CRLF = "\n\r";
-      String response = "HTTP/1.1 200 OK" + CRLF + // HTTP_Version Response_Code Response_Message
-          "Content-Length: " + html.getBytes().length + CRLF + // Header
-          CRLF +
-          html +
-          CRLF + CRLF;
+      HttpRequest httpRequest = null;
+      HttpResponse httpResponse = null;
+      try {
+        httpRequest = httpParser.parseHttpRequest(inputStream);
+        LOGGER.info("Request accepted as: " + httpRequest.getMethod().toString());
+        httpResponse = handleRequest(httpRequest);
+      } catch (HttpParsingException e) {
+        httpResponse = new HttpResponse.Builder()
+            .httpVersion(HttpVersion.HTTP_1_1.LITERAL)
+            .statusCode(e.getErrorCode())
+            .build();
+      }
 
-      outputStream.write(response.getBytes());
+      outputStream.write(httpResponse.getResponseBytes());
 
       LOGGER.info(" * Finished serving page to: " + socket.getInetAddress());
     } catch (IOException e) {
@@ -58,7 +79,52 @@ public class HttpRequestProccessorThread extends Thread {
         } catch (IOException e) {
         }
       }
+    }
+  }
 
+  private HttpResponse handleRequest(HttpRequest request) {
+    switch (request.getMethod()) {
+      case GET:
+        LOGGER.info(" * GET request.");
+        return handleGetRequest(request, true);
+      case HEAD:
+        LOGGER.info(" * HEAD request.");
+        return handleGetRequest(request, false);
+      default:
+        return new HttpResponse.Builder()
+            .httpVersion(request.getHttpVersion().LITERAL)
+            .statusCode(HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED)
+            .build();
+    }
+
+  }
+
+  private HttpResponse handleGetRequest(HttpRequest request, boolean includeBody) {
+    try {
+      HttpResponse.Builder responseBuilder = new HttpResponse.Builder();
+      String target = request.getRequestTarget();
+      String mimeType = webRootHandler.getFileMimeType(target);
+      responseBuilder
+          .httpVersion(request.getHttpVersion().LITERAL)
+          .statusCode(HttpStatusCode.OK)
+          .addHeader(HttpHeaderName.CONTENT_TYPE.headerName, mimeType);
+      if (includeBody) {
+        byte[] body = webRootHandler.getFileAsByteArray(target);
+        responseBuilder
+            .addHeader(HttpHeaderName.CONTENT_LENGTH.headerName, String.valueOf(body.length))
+            .messageBody(body);
+      }
+      return responseBuilder.build();
+    } catch (FileNotFoundException e) {
+      return new HttpResponse.Builder()
+          .httpVersion(request.getHttpVersion().LITERAL)
+          .statusCode(HttpStatusCode.CLIENT_ERROR_404_BAD_REQUEST)
+          .build();
+    } catch (ReadFileException e) {
+      return new HttpResponse.Builder()
+          .httpVersion(request.getHttpVersion().LITERAL)
+          .statusCode(HttpStatusCode.SERVER_ERROR_500_INTERNAL_SERVER_ERROR)
+          .build();
     }
   }
 

@@ -11,3 +11,6 @@ build
 
 # Ignore jdtls generated files
 .project
+
+# Ignore website files
+**/WebRoot

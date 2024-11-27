@@ -48,6 +48,7 @@ public class HttpHeadersParserTest {
         request);
     assertEquals(10, request.getHeaderNames().size());
     assertEquals("localhost:8080", request.getHeader("host"));
+    assertEquals("keep-alive", request.getHeader("Connection"));
   }
 
   @Test
