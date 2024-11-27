@@ -10,6 +10,15 @@ import org.slf4j.LoggerFactory;
 import com.harrison.httpserver.core.io.WebRootHandler;
 import com.harrison.httpserver.core.io.WebRootNotFoundException;
 
+/**
+ * This class implements a Thread object which will continuously listen
+ * on the chosen port and for each accepted connection spawn a connection
+ * processing thread, then return to listening.
+ * <br>
+ * <br>
+ * If the socket is unbound or closed then this thread will close the Socket
+ * and shut down.
+ */
 public class ServerListenerThread extends Thread {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(ServerListenerThread.class);
@@ -18,9 +27,21 @@ public class ServerListenerThread extends Thread {
   private WebRootHandler webRootHandler;
   private ServerSocket serverSocket;
 
-  public ServerListenerThread(int port, String webroot) throws IOException, WebRootNotFoundException {
+  /**
+   * Creates a thread which opens a serversocket and waits for a connection
+   * attempt.
+   *
+   * On a successfully accepted connection, launches a HttpRequestProccessorThread
+   * to serve the requested page/resource.
+   *
+   * @param port    - The port to open and listen for requests.
+   * @param webRoot - The root directory of the webpage to be served.
+   * @throws IOException
+   * @throws WebRootNotFoundException
+   */
+  public ServerListenerThread(int port, String webRoot) throws IOException, WebRootNotFoundException {
     this.port = port;
-    this.webRootHandler = new WebRootHandler(webroot);
+    this.webRootHandler = new WebRootHandler(webRoot);
     this.serverSocket = new ServerSocket(port);
   }
 

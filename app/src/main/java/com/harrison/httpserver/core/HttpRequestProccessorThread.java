@@ -27,9 +27,17 @@ public class HttpRequestProccessorThread extends Thread {
   private WebRootHandler webRootHandler;
   private HttpParser httpParser = new HttpParser();
 
-  public HttpRequestProccessorThread(Socket socket, WebRootHandler webroot) {
+  /**
+   * Creates a thread which will read the InputStream from the connected Socket
+   * and write the response (webpage or appropriate error page) from the webRoot
+   * into the OutputStream.
+   *
+   * @param socket  - Successfully accepted ServerSocket.
+   * @param webRoot - Instantiated root directory handler for website.
+   */
+  public HttpRequestProccessorThread(Socket socket, WebRootHandler webRoot) {
     this.socket = socket;
-    this.webRootHandler = webroot;
+    this.webRootHandler = webRoot;
 
   }
 
@@ -38,7 +46,6 @@ public class HttpRequestProccessorThread extends Thread {
     InputStream inputStream = null;
     OutputStream outputStream = null;
     try {
-      final String CRLF = "\n\r";
       inputStream = socket.getInputStream();
       outputStream = socket.getOutputStream();
 

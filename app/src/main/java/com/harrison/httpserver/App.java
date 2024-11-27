@@ -13,6 +13,13 @@ import com.harrison.httpserver.config.ConfigurationManager;
 import com.harrison.httpserver.core.ServerListenerThread;
 import com.harrison.httpserver.core.io.WebRootNotFoundException;
 
+/**
+ * A very basic Http server for practicing good coding practices and serving
+ * my personal profile website.
+ * 
+ * @author Harrison Martin
+ * @version 1.0
+ */
 public class App {
   private final static Logger LOGGER = LoggerFactory.getLogger(App.class);
 
@@ -21,12 +28,14 @@ public class App {
 
     ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/server_config.json");
     Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
+    int port = conf.getPort();
+    String webRoot = conf.getWebroot();
 
-    LOGGER.info("Port: " + conf.getPort());
-    LOGGER.info("Webroot: " + conf.getWebroot());
+    LOGGER.info("Port: " + port);
+    LOGGER.info("Webroot: " + webRoot);
 
     try {
-      ServerListenerThread listener = new ServerListenerThread(conf.getPort(), conf.getWebroot());
+      ServerListenerThread listener = new ServerListenerThread(port, webRoot);
       listener.start();
     } catch (IOException e) {
       // TODO Auto-generated catch block

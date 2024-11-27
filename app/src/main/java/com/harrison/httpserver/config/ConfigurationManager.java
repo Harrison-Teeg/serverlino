@@ -8,6 +8,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.harrison.httpserver.util.Json;
 
+/**
+ * Singleton class use: {@link #ConfigurationManager.getInstance()} implementing
+ * methods to read in server configuration from a .json file.
+ */
 public class ConfigurationManager {
 
   private static ConfigurationManager myConfigurationManager;
@@ -25,6 +29,9 @@ public class ConfigurationManager {
 
   /**
    * Load the server configuration .json file located at filePath
+   *
+   * @param filePath
+   * @throws HttpConfigurationException
    */
   public void loadConfigurationFile(String filePath) throws HttpConfigurationException {
     FileReader fileReader = null;
@@ -63,7 +70,7 @@ public class ConfigurationManager {
   }
 
   /**
-   * Returns the current configuration
+   * Returns the currently loaded configuration.
    */
   public Configuration getCurrentConfiguration() {
     if (myCurrentConfiguration == null) {
