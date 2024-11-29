@@ -56,10 +56,7 @@ public class HttpRequestProccessorThread extends Thread {
         LOGGER.info("Request accepted as: " + httpRequest.getMethod().toString());
         httpResponse = handleRequest(httpRequest);
       } catch (HttpParsingException e) {
-        httpResponse = new HttpResponse.Builder()
-            .httpVersion(HttpVersion.HTTP_1_1.LITERAL)
-            .statusCode(e.getErrorCode())
-            .build();
+        httpResponse = handleServiceError(e.getErrorCode());
       }
 
       outputStream.write(httpResponse.getResponseBytes());
@@ -89,7 +86,7 @@ public class HttpRequestProccessorThread extends Thread {
     }
   }
 
-  private HttpResponse handleRequest(HttpRequest request) {
+  private HttpResponse handleRequest(HttpRequest request) throws HttpParsingException {
     switch (request.getMethod()) {
       case GET:
         LOGGER.info(" * GET request.");
@@ -106,7 +103,7 @@ public class HttpRequestProccessorThread extends Thread {
 
   }
 
-  private HttpResponse handleGetRequest(HttpRequest request, boolean includeBody) {
+  private HttpResponse handleGetRequest(HttpRequest request, boolean includeBody) throws HttpParsingException {
     try {
       HttpResponse.Builder responseBuilder = new HttpResponse.Builder();
       String target = request.getRequestTarget();
@@ -123,16 +120,29 @@ public class HttpRequestProccessorThread extends Thread {
       }
       return responseBuilder.build();
     } catch (FileNotFoundException e) {
-      return new HttpResponse.Builder()
-          .httpVersion(request.getHttpVersion().LITERAL)
-          .statusCode(HttpStatusCode.CLIENT_ERROR_404_BAD_REQUEST)
-          .build();
+      throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_404_BAD_REQUEST);
     } catch (ReadFileException e) {
-      return new HttpResponse.Builder()
-          .httpVersion(request.getHttpVersion().LITERAL)
-          .statusCode(HttpStatusCode.SERVER_ERROR_500_INTERNAL_SERVER_ERROR)
-          .build();
+      throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_500_INTERNAL_SERVER_ERROR);
     }
   }
 
+  private HttpResponse handleServiceError(HttpStatusCode errorCode) {
+    HttpResponse.Builder errorResponseBuilder = new HttpResponse.Builder();
+    errorResponseBuilder
+        .httpVersion(HttpVersion.HTTP_1_1.LITERAL)
+        .statusCode(errorCode);
+
+    try {
+      String target = "/" + errorCode.STATUS_CODE + "_page";
+      String mimeType = webRootHandler.getFileMimeType(target);
+      byte[] body = webRootHandler.getFileAsByteArray(target);
+      errorResponseBuilder
+          .addHeader(HttpHeaderName.CONTENT_TYPE.headerName, mimeType)
+          .addHeader(HttpHeaderName.CONTENT_LENGTH.headerName, String.valueOf(body.length))
+          .messageBody(body);
+    } catch (ReadFileException e) {
+    } catch (FileNotFoundException e) {
+    }
+    return errorResponseBuilder.build();
+  }
 }
