@@ -23,6 +23,10 @@ public class WebRootHandler {
     return path.endsWith("/");
   }
 
+  private boolean requestedPathDeclaresFiletype(String path) {
+    return path.contains(".");
+  }
+
   private boolean requestedPathExistsInsideWebroot(String path) {
     File file = new File(webRoot, path);
 
@@ -42,8 +46,11 @@ public class WebRootHandler {
 
   public String getFileMimeType(String path) throws FileNotFoundException { // Research mimeTypes..., URLConnection
                                                                             // mimeType tables..?
-    if (requestedPathEndsWithSlash(path))
+    if (requestedPathEndsWithSlash(path)) {
       path = path + "index.html";
+    } else if (!requestedPathDeclaresFiletype(path)) {
+      path = path + ".html";
+    }
 
     if (!requestedPathExistsInsideWebroot(path))
       throw new FileNotFoundException();
@@ -60,8 +67,11 @@ public class WebRootHandler {
   }
 
   public byte[] getFileAsByteArray(String path) throws FileNotFoundException, ReadFileException {
-    if (requestedPathEndsWithSlash(path))
+    if (requestedPathEndsWithSlash(path)) {
       path = path + "index.html";
+    } else if (!requestedPathDeclaresFiletype(path)) {
+      path = path + ".html";
+    }
 
     if (!requestedPathExistsInsideWebroot(path))
       throw new FileNotFoundException();
