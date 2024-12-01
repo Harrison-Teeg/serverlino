@@ -133,7 +133,7 @@ public class HttpRequestProccessorThread extends Thread {
         .statusCode(errorCode);
 
     try {
-      String target = "/" + errorCode.STATUS_CODE + "_page";
+      String target = "/error/" + errorCode.STATUS_CODE + "_page";
       String mimeType = webRootHandler.getFileMimeType(target);
       byte[] body = webRootHandler.getFileAsByteArray(target);
       errorResponseBuilder
