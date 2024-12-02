@@ -1,4 +1,5 @@
 {
   "port": 8080,
-  "webroot": "WebRoot"
+  "webroot": "WebRoot",
+  "threadpoolCount" : 8
 }

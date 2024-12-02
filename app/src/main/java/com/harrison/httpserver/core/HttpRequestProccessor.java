@@ -19,9 +19,9 @@ import com.harrison.http.HttpVersion;
 import com.harrison.httpserver.core.io.ReadFileException;
 import com.harrison.httpserver.core.io.WebRootHandler;
 
-public class HttpRequestProccessorThread extends Thread {
+public class HttpRequestProccessor implements Runnable {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(HttpRequestProccessorThread.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(HttpRequestProccessor.class);
 
   private Socket socket;
   private WebRootHandler webRootHandler;
@@ -35,7 +35,7 @@ public class HttpRequestProccessorThread extends Thread {
    * @param socket  - Successfully accepted ServerSocket.
    * @param webRoot - Instantiated root directory handler for website.
    */
-  public HttpRequestProccessorThread(Socket socket, WebRootHandler webRoot) {
+  public HttpRequestProccessor(Socket socket, WebRootHandler webRoot) {
     this.socket = socket;
     this.webRootHandler = webRoot;
 

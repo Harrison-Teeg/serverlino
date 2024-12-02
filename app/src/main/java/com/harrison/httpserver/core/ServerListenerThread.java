@@ -3,6 +3,8 @@ package com.harrison.httpserver.core;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ public class ServerListenerThread extends Thread {
   private int port;
   private WebRootHandler webRootHandler;
   private ServerSocket serverSocket;
+  private final ExecutorService threadPool;
 
   /**
    * Creates a thread which opens a serversocket and waits for a connection
@@ -34,20 +37,22 @@ public class ServerListenerThread extends Thread {
    * On a successfully accepted connection, launches a HttpRequestProccessorThread
    * to serve the requested page/resource.
    *
-   * @param port    - The port to open and listen for requests.
-   * @param webRoot - The root directory of the webpage to be served.
+   * @param port            - Port to open and listen for requests.
+   * @param webRoot         - Root directory of the webpage to be served.
+   * @param threadpoolCount - Number of threads for processing requests
    * @throws IOException
    * @throws WebRootNotFoundException
    */
-  public ServerListenerThread(int port, String webRoot) throws IOException, WebRootNotFoundException {
+  public ServerListenerThread(int port, String webRoot, int threadpoolCount)
+      throws IOException, WebRootNotFoundException {
     this.port = port;
     this.webRootHandler = new WebRootHandler(webRoot);
     this.serverSocket = new ServerSocket(port);
+    this.threadPool = Executors.newFixedThreadPool(threadpoolCount);
   }
 
   @Override
   public void run() {
-    // TODO use thread-pool instead of infinitely generating threads
     try {
       while (serverSocket.isBound() && !serverSocket.isClosed()) {
         try {
@@ -55,8 +60,7 @@ public class ServerListenerThread extends Thread {
           LOGGER.info(" * Connection on port: " + port
               + ", serving: " + webRootHandler.getWebrootName()
               + " is accepted from: " + socket.getInetAddress());
-          Thread pageServer = new HttpRequestProccessorThread(socket, webRootHandler);
-          pageServer.start();
+          threadPool.submit(new HttpRequestProccessor(socket, webRootHandler));
         } catch (IOException e) {
           LOGGER.error("Failed to bind socket and generate processing thread.", e);
         }
