@@ -27,7 +27,7 @@ public class ServerListenerThread extends Thread {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(ServerListenerThread.class);
 
-  private InetAddress address;
+  private InetAddress hostname;
   private int backlog;
   private int port;
   private WebRootHandler webRootHandler;
@@ -48,11 +48,11 @@ public class ServerListenerThread extends Thread {
    */
   public ServerListenerThread(Configuration conf)
       throws IOException, WebRootNotFoundException {
-    this.address = conf.getAddress();
+    this.hostname = conf.getHostname();
     this.backlog = conf.getBacklog();
     this.port = conf.getPort();
     this.webRootHandler = new WebRootHandler(conf.getWebroot());
-    this.serverSocket = new ServerSocket(port, backlog, address);
+    this.serverSocket = new ServerSocket(port, backlog, hostname);
     this.threadPool = Executors.newFixedThreadPool(conf.getThreadpoolCount());
   }
 

@@ -29,7 +29,7 @@ public class App {
     ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/server_config.json");
     Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
 
-    LOGGER.info("Address: " + conf.getAddress().toString());
+    LOGGER.info("Hostname: " + conf.getHostname().toString());
     LOGGER.info("Backlog: " + conf.getBacklog());
     LOGGER.info("Port: " + conf.getPort());
     LOGGER.info("Request processing threadpool count: " + conf.getThreadpoolCount());

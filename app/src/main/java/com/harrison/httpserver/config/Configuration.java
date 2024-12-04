@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class Configuration {
-  private InetAddress address;
+  private InetAddress hostname;
   private int backlog = 10;
   private int port;
   private int threadpoolCount;
@@ -34,15 +34,15 @@ public class Configuration {
     this.threadpoolCount = threadpoolCount;
   }
 
-  public InetAddress getAddress() {
-    return address;
+  public InetAddress getHostname() {
+    return hostname;
   }
 
-  public void setAddress(String address) throws UnknownHostException {
-    if (address == null || address == "") {
-      this.address = InetAddress.getLocalHost();
+  public void setHostname(String name) throws UnknownHostException {
+    if (name == null || name == "") {
+      this.hostname = InetAddress.getLocalHost();
     } else {
-      this.address = InetAddress.getByName(address);
+      this.hostname = InetAddress.getByName(name);
     }
   }
 
