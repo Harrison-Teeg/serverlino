@@ -1,6 +1,11 @@
 package com.harrison.httpserver.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class Configuration {
+  private InetAddress address;
+  private int backlog = 10;
   private int port;
   private int threadpoolCount;
   private String webroot;
@@ -27,6 +32,26 @@ public class Configuration {
 
   public void setThreadpoolCount(int threadpoolCount) {
     this.threadpoolCount = threadpoolCount;
+  }
+
+  public InetAddress getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) throws UnknownHostException {
+    if (address == null || address == "") {
+      this.address = InetAddress.getLocalHost();
+    } else {
+      this.address = InetAddress.getByName(address);
+    }
+  }
+
+  public int getBacklog() {
+    return backlog;
+  }
+
+  public void setBacklog(int backlog) {
+    this.backlog = backlog;
   }
 
 }

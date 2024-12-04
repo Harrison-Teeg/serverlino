@@ -13,4 +13,4 @@ build
 .project
 
 # Ignore website files
-**/WebRoot
+**/Harrison-Profile

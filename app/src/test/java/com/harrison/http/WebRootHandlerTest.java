@@ -26,7 +26,7 @@ class WebRootHandlerTest {
 
   @BeforeAll
   private void beforeClass() throws NoSuchMethodException, SecurityException, WebRootNotFoundException {
-    webRootHandler = new WebRootHandler("WebRoot");
+    webRootHandler = new WebRootHandler("testPages");
     Class<WebRootHandler> cls = WebRootHandler.class;
 
     requestedPathEndsWithSlash = cls.getDeclaredMethod("requestedPathEndsWithSlash", String.class);
@@ -71,10 +71,10 @@ class WebRootHandlerTest {
   }
 
   @Test
-  void checkProperMimeTypeForPngFile() {
+  void checkProperMimeTypeForOctetStream() {
     try {
-      String mimeType = webRootHandler.getFileMimeType("/images/frameme.png");
-      assertEquals("image/png", mimeType);
+      String mimeType = webRootHandler.getFileMimeType("favicon.ico");
+      assertEquals("application/octet-stream", mimeType);
     } catch (FileNotFoundException e) {
       fail(e);
     }
@@ -141,7 +141,7 @@ class WebRootHandlerTest {
   @Test
   void tryValidRelativeWebrootPath() {
     try {
-      WebRootHandler webRootHandler = new WebRootHandler("WebRoot");
+      WebRootHandler webRootHandler = new WebRootHandler("testPages");
     } catch (WebRootNotFoundException e) {
       fail();
     }

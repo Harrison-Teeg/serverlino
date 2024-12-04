@@ -28,16 +28,15 @@ public class App {
 
     ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/server_config.json");
     Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
-    int port = conf.getPort();
-    int threadpoolCount = conf.getThreadpoolCount();
-    String webRoot = conf.getWebroot();
 
-    LOGGER.info("Port: " + port);
-    LOGGER.info("Request processing threadpool count: " + threadpoolCount);
-    LOGGER.info("Webroot: " + webRoot);
+    LOGGER.info("Address: " + conf.getAddress().toString());
+    LOGGER.info("Backlog: " + conf.getBacklog());
+    LOGGER.info("Port: " + conf.getPort());
+    LOGGER.info("Request processing threadpool count: " + conf.getThreadpoolCount());
+    LOGGER.info("Webroot: " + conf.getWebroot());
 
     try {
-      ServerListenerThread listener = new ServerListenerThread(port, webRoot, threadpoolCount);
+      ServerListenerThread listener = new ServerListenerThread(conf);
       listener.start();
     } catch (IOException e) {
       // TODO Auto-generated catch block

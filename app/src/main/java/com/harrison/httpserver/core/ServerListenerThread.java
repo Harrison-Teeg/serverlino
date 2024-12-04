@@ -1,6 +1,7 @@
 package com.harrison.httpserver.core;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +10,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.harrison.httpserver.config.Configuration;
 import com.harrison.httpserver.core.io.WebRootHandler;
 import com.harrison.httpserver.core.io.WebRootNotFoundException;
 
@@ -25,6 +27,8 @@ public class ServerListenerThread extends Thread {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(ServerListenerThread.class);
 
+  private InetAddress address;
+  private int backlog;
   private int port;
   private WebRootHandler webRootHandler;
   private ServerSocket serverSocket;
@@ -37,18 +41,19 @@ public class ServerListenerThread extends Thread {
    * On a successfully accepted connection, launches a HttpRequestProccessorThread
    * to serve the requested page/resource.
    *
-   * @param port            - Port to open and listen for requests.
-   * @param webRoot         - Root directory of the webpage to be served.
-   * @param threadpoolCount - Number of threads for processing requests
+   * @param conf - Server configuration,
+   *             {@link com.harrison.httpserver.config.Configuration}
    * @throws IOException
    * @throws WebRootNotFoundException
    */
-  public ServerListenerThread(int port, String webRoot, int threadpoolCount)
+  public ServerListenerThread(Configuration conf)
       throws IOException, WebRootNotFoundException {
-    this.port = port;
-    this.webRootHandler = new WebRootHandler(webRoot);
-    this.serverSocket = new ServerSocket(port);
-    this.threadPool = Executors.newFixedThreadPool(threadpoolCount);
+    this.address = conf.getAddress();
+    this.backlog = conf.getBacklog();
+    this.port = conf.getPort();
+    this.webRootHandler = new WebRootHandler(conf.getWebroot());
+    this.serverSocket = new ServerSocket(port, backlog, address);
+    this.threadPool = Executors.newFixedThreadPool(conf.getThreadpoolCount());
   }
 
   @Override

@@ -1,5 +1,7 @@
 {
+  "address": "0.0.0.0",
+  "backlog": 10,
   "port": 8080,
-  "webroot": "WebRoot",
+  "webroot": "Harrison-Profile",
   "threadpoolCount" : 8
 }
