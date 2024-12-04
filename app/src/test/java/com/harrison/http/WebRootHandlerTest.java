@@ -73,7 +73,7 @@ class WebRootHandlerTest {
   @Test
   void checkProperMimeTypeForPngFile() {
     try {
-      String mimeType = webRootHandler.getFileMimeType("/frameme.png");
+      String mimeType = webRootHandler.getFileMimeType("/images/frameme.png");
       assertEquals("image/png", mimeType);
     } catch (FileNotFoundException e) {
       fail(e);
