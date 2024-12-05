@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 
 public class Configuration {
   private InetAddress hostname;
-  private int backlog = 10;
+  private int backlog = 50;
   private int port;
   private int threadpoolCount;
   private String webroot;
