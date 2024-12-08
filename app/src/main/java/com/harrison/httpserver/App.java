@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.harrison.httpserver.config.Configuration;
 import com.harrison.httpserver.config.ConfigurationManager;
+import com.harrison.httpserver.core.SSLServerListenerThread;
 import com.harrison.httpserver.core.ServerListenerThread;
 import com.harrison.httpserver.core.io.WebRootNotFoundException;
 
@@ -26,18 +27,37 @@ public class App {
   public static void main(String[] args) {
     LOGGER.info("Server starting...");
 
-    ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/server_config.json");
+    ConfigurationManager.getInstance().loadConfigurationFile("cfg/server_config.json");
     Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
 
-    LOGGER.info("Hostname: " + conf.getHostname().toString());
+    if (conf.getHostname() == null) {
+      LOGGER.info("Hostname: localhost");
+    } else {
+      LOGGER.info("Hostname: " + conf.getHostname().toString());
+    }
     LOGGER.info("Backlog: " + conf.getBacklog());
     LOGGER.info("Port: " + conf.getPort());
+    LOGGER.info("Secure Port: " + conf.getSecurePort());
     LOGGER.info("Request processing threadpool count: " + conf.getThreadpoolCount());
     LOGGER.info("Webroot: " + conf.getWebroot());
 
     try {
-      ServerListenerThread listener = new ServerListenerThread(conf);
-      listener.start();
+      if (conf.getPort() > 0) {
+        ServerListenerThread listener = new ServerListenerThread(conf);
+        listener.start();
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (WebRootNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
+      if (conf.getSecurePort() > 0) {
+        SSLServerListenerThread secureListener = new SSLServerListenerThread(conf);
+        secureListener.start();
+      }
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
