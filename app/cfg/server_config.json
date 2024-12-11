@@ -3,7 +3,8 @@
   "backlog": 10,
   "port": 8080,
   "webroot": "examplePages",
-  "threadpoolCount" : 4,
+  "threadpoolCount" : 8,
+  "cacheControl" : "max-age=604800",
   "securePort": 8443,
   "keystorePath": "cfg/selfsigned",
   "keystorePassword": "unsecureExample"

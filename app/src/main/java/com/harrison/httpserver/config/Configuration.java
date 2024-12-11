@@ -12,6 +12,7 @@ public class Configuration {
   private String webroot;
   private String keystorePath;
   private String keystorePassword;
+  private String cacheControl = "";
 
   public int getPort() {
     return port;
@@ -79,6 +80,14 @@ public class Configuration {
 
   public void setKeystorePassword(String keystorePassword) {
     this.keystorePassword = keystorePassword;
+  }
+
+  public String getCacheControl() {
+    return cacheControl;
+  }
+
+  public void setCacheControl(String cacheControl) {
+    this.cacheControl = cacheControl;
   }
 
 }

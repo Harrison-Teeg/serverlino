@@ -16,6 +16,7 @@ import com.harrison.http.HttpRequest;
 import com.harrison.http.HttpResponse;
 import com.harrison.http.HttpStatusCode;
 import com.harrison.http.HttpVersion;
+import com.harrison.httpserver.config.Configuration;
 import com.harrison.httpserver.core.io.ReadFileException;
 import com.harrison.httpserver.core.io.WebRootHandler;
 
@@ -26,6 +27,7 @@ public class HttpRequestProccessor implements Runnable {
   private Socket socket;
   private WebRootHandler webRootHandler;
   private HttpParser httpParser = new HttpParser();
+  private String cacheControl;
 
   /**
    * Creates a thread which will read the InputStream from the connected Socket
@@ -35,9 +37,10 @@ public class HttpRequestProccessor implements Runnable {
    * @param socket  - Successfully accepted ServerSocket.
    * @param webRoot - Instantiated root directory handler for website.
    */
-  public HttpRequestProccessor(Socket socket, WebRootHandler webRoot) {
+  public HttpRequestProccessor(Socket socket, WebRootHandler webRoot, String cacheControl) {
     this.socket = socket;
     this.webRootHandler = webRoot;
+    this.cacheControl = cacheControl;
 
   }
 
@@ -117,6 +120,9 @@ public class HttpRequestProccessor implements Runnable {
         responseBuilder
             .addHeader(HttpHeaderName.CONTENT_LENGTH.headerName, String.valueOf(body.length))
             .messageBody(body);
+        if (!cacheControl.equals("")) {
+          responseBuilder.addHeader(HttpHeaderName.CACHE_CONTROL.headerName, cacheControl);
+        }
       }
       return responseBuilder.build();
     } catch (FileNotFoundException e) {

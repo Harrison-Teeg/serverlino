@@ -42,6 +42,7 @@ public class SSLServerListenerThread extends Thread {
   private InetAddress hostname;
   private int backlog;
   private int port;
+  private String cacheControl;
   private WebRootHandler webRootHandler;
   private SSLServerSocket serverSocket;
   private final ExecutorService threadPool;
@@ -63,6 +64,7 @@ public class SSLServerListenerThread extends Thread {
     this.hostname = conf.getHostname();
     this.backlog = conf.getBacklog();
     this.port = conf.getSecurePort();
+    this.cacheControl = conf.getCacheControl();
     this.webRootHandler = new WebRootHandler(conf.getWebroot());
     SSLServerSocketFactory factory = null;
     try {
@@ -88,7 +90,7 @@ public class SSLServerListenerThread extends Thread {
           LOGGER.info(" * Connection on port: " + port
               + ", serving: " + webRootHandler.getWebrootName()
               + " is accepted from: " + socket.getInetAddress());
-          threadPool.submit(new HttpRequestProccessor(socket, webRootHandler));
+          threadPool.submit(new HttpRequestProccessor(socket, webRootHandler, cacheControl));
         } catch (IOException e) {
           LOGGER.error("Failed to bind socket and generate processing thread.", e);
         }
