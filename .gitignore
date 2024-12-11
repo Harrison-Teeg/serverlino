@@ -15,5 +15,5 @@ build
 # Ignore website files
 **/Harrison-Profile
 
-# Ignore the temp keystore
-app/cfg/selfsigned
+# Ignore real keystores
+*.p12

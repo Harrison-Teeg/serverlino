@@ -8,6 +8,12 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+
+    // Apply the java plugin
+    java
+
+    // Apply the gradle-docker-plugin
+    id("com.bmuschko.docker-java-application") version "7.3.0"
 }
 
 repositories {
@@ -47,4 +53,10 @@ application {
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+docker {
+    javaApplication {
+        baseImage.set("eclipse-temurin:17-jre")
+    }
 }

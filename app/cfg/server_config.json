@@ -2,9 +2,9 @@
   "hostname": "localhost",
   "backlog": 10,
   "port": 8080,
-  "webroot": "Harrison-Profile",
+  "webroot": "examplePages",
   "threadpoolCount" : 4,
   "securePort": 8443,
   "keystorePath": "cfg/selfsigned",
-  "keystorePassword": "teststore"
+  "keystorePassword": "unsecureExample"
 }

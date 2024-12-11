@@ -26,7 +26,7 @@ class WebRootHandlerTest {
 
   @BeforeAll
   private void beforeClass() throws NoSuchMethodException, SecurityException, WebRootNotFoundException {
-    webRootHandler = new WebRootHandler("testPages");
+    webRootHandler = new WebRootHandler("examplePages");
     Class<WebRootHandler> cls = WebRootHandler.class;
 
     requestedPathEndsWithSlash = cls.getDeclaredMethod("requestedPathEndsWithSlash", String.class);
@@ -141,7 +141,7 @@ class WebRootHandlerTest {
   @Test
   void tryValidRelativeWebrootPath() {
     try {
-      WebRootHandler webRootHandler = new WebRootHandler("testPages");
+      WebRootHandler webRootHandler = new WebRootHandler("examplePages");
     } catch (WebRootNotFoundException e) {
       fail();
     }
