@@ -12,8 +12,5 @@ build
 # Ignore jdtls generated files
 .project
 
-# Ignore website files
-**/Harrison-Profile
-
 # Ignore real keystores
 *.p12
