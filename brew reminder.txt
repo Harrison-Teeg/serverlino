@@ -4,8 +4,8 @@ Building docker image
 
 Then run and load volumes / open ports with (e.g.)
  sudo docker run \
-    -v ./app/cfg:/app/cfg \
-    -v ./app/examplePages:/app/examplePages \
+    -v ./app/cfg:/app/cfg:ro \
+    -v ./app/examplePages:/app/examplePages:ro \
     -p 80:8080 \
     -p 443:8443 \
     example.app
